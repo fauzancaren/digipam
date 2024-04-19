@@ -1,0 +1,7 @@
+asset/image/file/
+asset/image/payment/
+asset/image/pengiriman/
+application/cache/ 
+application/logs/ 
+application/third_party/vendor/*
+application/third_party/composer.lock 
