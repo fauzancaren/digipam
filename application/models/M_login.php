@@ -13,16 +13,28 @@ class M_login extends CI_Model
 	{
 		parent::__construct();
 	}
-	function createDataClass($username, $useremail, $role) {
-		return new class($username, $useremail, $role) {
+	function createDataClass($idUSer, $username, $useremail, $PelangganIDMesin, $role) {
+		return new class($idUSer, $username, $useremail, $PelangganIDMesin, $role) {
+			public $idUser;
 			public $username;
 			public $useremail;
+			public $PelangganIDMesin;
 			public $role;
 	
-			public function __construct($username, $useremail, $role) {
+			public function __construct($idUser, $username, $useremail, $PelangganIDMesin, $role) {
+				$this->idUser = $idUser;
 				$this->username = $username;
 				$this->useremail = $useremail;
+				$this->PelangganIDMesin = $PelangganIDMesin;
 				$this->role = $role;
+			}
+
+			public function idUser() {
+				return $this->$idUser;
+			}
+
+			public function setIdUser($idUser) {
+				$this->idUser = $$idUser;
 			}
 	
 			public function username() {
@@ -39,6 +51,14 @@ class M_login extends CI_Model
 	
 			public function setUseremail($useremail) {
 				$this->useremail = $useremail;
+			}
+
+			public function idMesin() {
+				return $this->useremail;
+			}
+	
+			public function setIdMesin($PelangganIDMesin) {
+				$this->PelangganIDMesin = $PelangganIDMesin;
 			}
 	
 			public function role() {
@@ -62,7 +82,7 @@ class M_login extends CI_Model
 			$query1 = $this->db->where("PelangganEmail",$username)->where("PelangganPassword",$pass)->get("pelanggan");
 			if ($query1->num_rows() == 1) {
 				$data = $query1->row(); 
-				return $this->createDataClass($data->PelangganName,$data->PelangganEmail,'pelanggan');
+				return $this->createDataClass($data->PelangganId, $data->PelangganName,$data->PelangganEmail, $data->PelangganIDMesin, 'pelanggan');
 			} else {
 				return false;
 			}

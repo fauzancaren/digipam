@@ -14,7 +14,9 @@ class Client extends CI_Controller
 			$this->session->set_flashdata('notif', '<div class="alert alert-danger" role="alert">anda belum login, silahkan login terlebih dahulu!!!</div>');
 			redirect('login', 'refresh');
 		}
-		 
+
+		$this->load->model('Chart_model');
+		$this->load->model('Pengguna_model');
 		date_default_timezone_set('Asia/Jakarta');
 	}
 
@@ -54,11 +56,15 @@ class Client extends CI_Controller
 		$data['_sessionuser'] = $this->session->userdata();
 		$data['_agent'] = $this->agent; 
 		$data['_menu'] = "Dashboard"; 
-		$data['_content'] = $this->load->view('content/dashboard_admin', $data,true);
 		if ($this->session->userdata('login_auth') != TRUE){
 			$this->load->view('template/auth', $data);
-		}else{
+		}else if($this->session->userdata('login_mode') == 'petugas'){
+			$data['_content'] = $this->load->view('content/dashboard_admin', $data,true);
 			$this->load->view('template/mainmenu3', $data);
+		}else{
+        	$data['usage_data'] = $this->Chart_model->getUsageData($this->session->userdata('PelangganIDMesin'));
+			$data['_content'] = $this->load->view('content/dashboard_pelanggan', $data,true);
+			$this->load->view('template/mainmenu4', $data);
 		}
 	} 
 	public function tarif()
@@ -135,5 +141,76 @@ class Client extends CI_Controller
 			$this->load->view('template/mainmenu3', $data);
 		}
 	}
+
+	public function pengaduan ()
+	{
+		$data['_sessionuser'] = $this->session->userdata();
+		$data['_agent'] = $this->agent; 
+		$data['_menu'] = "Pengaduan";
+		$data['_content'] = $this->load->view('content/pengaduan_pelanggan', $data,true);
+		if ($this->session->userdata('login_auth') != TRUE){
+			$this->load->view('template/auth', $data);
+		}else{
+			$this->load->view('template/mainmenu4', $data);
+		}
+	}
+
+	public function getDataPengaduan()
+	{
+		$status = $this->input->post('status');
+		$data['result'] = $this->Pengguna_model->getPengaduan($this->session->userdata('idUser'), $status);
+
+		$html = '<ul class="list-group">';
+    foreach ($data['result'] as $item) {
+        $html .= '<li class="list-group-item">';
+        $html .= '<div class="d-flex flex-column gap-3">';
+        $html .= '<div class="d-flex flex-row justify-content-between align-items-baseline">';
+        $html .= '<h5>' . $item['pengajuanType'] . '</h5>';
+        $html .= '<span>' . $item['pengaduanTanggal'] . '</span>';
+        $html .= '</div>';
+        $html .= '<span>' . $item['pengaduanPesan'] . '</span>';
+        $html .= '</div>';
+        $html .= '<div class="d-flex flex-row justify-content-end align-items-center mt-4">';
+        $html .= '<div class="d-flex flex-row gap-2">';
+		if($item['pengaduanStatusNotice'] === "0"){
+			$html .= '<button class="btn btn-sm btn-warning disabled">Menunggu Laporan Diterima</button>';
+			$html .= '<button class="btn btn-sm btn-outline-danger canceladuan" onclick="delete_click(' . $item['pengaduanID'] . ')">Batalkan Aduan</button>';
+		}else if($item['pengaduanStatusNotice'] === "1"){
+			$html .= '<button class="btn btn-sm btn-primary disabled">Petugas Akan Segera Datang</button>';
+			$html .= '<button class="btn btn-sm btn-outline-success">Selesaikan Pengaduan</button>';
+		}else{
+			$html .= '<button class="btn btn-sm btn-secondary">Beri Penilaian</button>';
+		}
+        // $html .= '<button class="btn btn-sm btn-primary">Edit</button>';
+        // $html .= '<button class="btn btn-sm btn-danger">Batalkan Aduan</button>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</li>';
+    }
+    $html .= '</ul>';
+
+    // Kirim HTML sebagai respons
+    echo $html;
+		
+		
+	}
+
+	public function deletePengaduan($id) {
+        // $id_pengaduan = $this->input->post('id_pengaduan');
+        // $deleted = $this->Pengguna_model->deletePengaduan($id_pengaduan);
+
+        // if ($deleted) {
+        //     $response = array('status' => 'success', 'message' => 'Aduan berhasil dibatalkan');
+        // } else {
+        //     $response = array('status' => 'error', 'message' => 'Gagal membatalkan aduan');
+        // }
+
+        // header('Content-Type: application/json');
+        // echo json_encode($response);
+            $this->db->delete('pengaduan', array("pengaduanID" => $id));
+            echo ($this->db->affected_rows() != 1) ? "false" : "true";
+            exit;
+    }
+	
  
 }

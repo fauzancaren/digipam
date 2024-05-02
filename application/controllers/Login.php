@@ -30,6 +30,7 @@ class Login extends CI_Controller
         $row = $this->m_login->login(get_cookie('username'), $this->m_login->DecryptedPassword(get_cookie('password')));
         if ($row) { 
             $sess_array = array(
+                'idUser' => $row->idUser,
                 'username' =>$row->username,
                 'useremail' =>$row->useremail,
                 'dark_mode' => true,
@@ -37,6 +38,7 @@ class Login extends CI_Controller
                 'login_mode' => $row->role, 
                 'login_auth' => true,
                 'login_uuid' => (empty(get_cookie('uuid')) ? $this->m_login->guidv4() : get_cookie('uuid')),
+                'PelangganIDMesin' => $row->PelangganIDMesin,
 
             );
             $this->session->set_userdata($sess_array);
@@ -55,7 +57,8 @@ class Login extends CI_Controller
         if ($check_user) {
             $row = $this->m_login->login($username, $pass);
             if ($row) { 
-                $sess_array = array( 
+                $sess_array = array(
+                    'idUser' => $row->idUser, 
                     'username' =>$row->username,
                     'useremail' =>$row->useremail,
                     'dark_mode' => false,
@@ -63,6 +66,7 @@ class Login extends CI_Controller
                     'login_mode' => $row->role,
                     'login_uuid' => $uuid,
                     'login_auth' => true,
+                    'PelangganIDMesin' => $row->PelangganIDMesin,
                 );
                 $this->session->set_userdata($sess_array);
 
@@ -105,7 +109,9 @@ class Login extends CI_Controller
         delete_cookie('auth');
  
         $this->session->unset_userdata('username');
-        $this->session->unset_userdata('useremail'); 
+        $this->session->unset_userdata('useremail');
+        $this->session->unset_userdata('PelangganIDMesin');
+        $this->session->unset_userdata('idUser');
         $this->session->unset_userdata('login_status');
         $this->session->unset_userdata('login_mode');
         $this->session->unset_userdata('login_uuid');

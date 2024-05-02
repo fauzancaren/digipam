@@ -760,6 +760,47 @@ main .recent-orders a{
     border-radius: 8px;
     background: url('image/obi-erp/bg-map.png') center center / cover no-repeat var(--color-background);
 }
+
+    /* nav tabs start */
+    .nav-tabs{
+        border-color: transparent;
+    }
+
+    .nav-item{
+        background-color: var(--color-white);
+        border: none;
+        border: none;
+    }
+
+    .nav-item .nav-link{
+        color: var(--color-dark);
+    }
+
+    .nav-tabs .nav-link.active{
+        background-color: var(--color-light);
+        color: var(--color-dark);
+        border-color: transparent;
+    }
+
+    .tab-content{
+        background-color: var(--color-light);
+        color: var(--color-dark);
+        min-height: 20vh;
+        max-height: auto;
+    }
+
+    .list-group {
+        padding: 0;
+    }
+
+    .list-group .list-group-item{
+        background-color: var(--color-background);
+        border: 2px solid;
+        border-color: var(--color-light);
+        padding: 1rem 1.5rem;
+        color: var(--color-dark);
+    }
+    /* nav tabs end  */
 @media screen and (max-width: 1200px) {
     .home-body{
         width: 95%;
@@ -812,6 +853,7 @@ main .recent-orders a{
     main table tbody tr td:first-child{
         display: none;
     }
+    
 
 }
 
